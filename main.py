@@ -38,11 +38,9 @@ class VideoProcessor(QMainWindow):
         self.ui.upload_btn.clicked.connect(self.loadVideo)
         self.ui.reset_btn.clicked.connect(self.resetProcessing)
         
-        # cria pasta 'model' se ela não existir
         if not os.path.exists('model'):
             os.mkdir('model')
 
-        # cria pasta 'media/output' se ela não existir
         if not os.path.exists('media/output'):
             os.makedirs('media/output')
 
