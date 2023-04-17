@@ -1,3 +1,4 @@
+import os
 import sys
 import sqlite3
 import datetime
@@ -15,7 +16,6 @@ from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
 from model import load_model, process_frame, process_activation_map
 from polyp_tracker_screen import PolypTrackerScreen
 from global_vars import GlobalVars
-
 
 class VideoProcessor(QMainWindow):
     
@@ -37,6 +37,14 @@ class VideoProcessor(QMainWindow):
         self.timer.timeout.connect(self.processVideoFrame)
         self.ui.upload_btn.clicked.connect(self.loadVideo)
         self.ui.reset_btn.clicked.connect(self.resetProcessing)
+        
+        # cria pasta 'model' se ela não existir
+        if not os.path.exists('model'):
+            os.mkdir('model')
+
+        # cria pasta 'media/output' se ela não existir
+        if not os.path.exists('media/output'):
+            os.makedirs('media/output')
 
     def getModel(self):
         if self.detr is None:
@@ -83,32 +91,6 @@ class VideoProcessor(QMainWindow):
             self.timer.setInterval(int(1000 / self.fps))
             self.timer.start()
             self.timer.timeout.connect(self.processVideoFrame)
-
-    '''
-    def processVideoFrame(self):
-        frameNum = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
-
-        self.ui.progressBar.setValue(int(frameNum))
-
-        success, frame = self.cap.read()
-        if success:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-            processedFrame, processTime = self.process_frame_wrapper(frame, process_type='frame')
-            
-            im = Image.fromarray(cv2.cvtColor(processedFrame, cv2.COLOR_BGR2RGB))
-            
-            image_original = os.path.join('media', 'output', f'original_{int(frameNum):d}.png')
-            im.save(image_original)
-        
-            activateMap = self.process_frame_wrapper(frame, process_type='activation_map')
-
-            self.frameCount += 1
-            self.displayFrame(processedFrame, activateMap, self.frameCount, processTime)
-
-        else:
-            self.timer.stop()
-    '''
     
     def processVideoFrame(self):
         frameNum = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
@@ -134,7 +116,6 @@ class VideoProcessor(QMainWindow):
         else:
             self.timer.stop()
     
-            
     def updateUI(self, processedFrame, activateMap, frameCount, processTime):
         #processed frame
         height, width, _ = processedFrame.shape
@@ -145,15 +126,10 @@ class VideoProcessor(QMainWindow):
         
         pixmap = QPixmap.fromImage(qImg).scaled(label_size, Qt.KeepAspectRatio)
 
-        # Define o tamanho do label e centraliza a imagem
-        #label_size_scaled = QSize(pixmap.width(), pixmap.height())
         self.ui.video_label1.setPixmap(pixmap)
         self.ui.video_label1.setFixedSize(label_size)
         self.ui.video_label1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.ui.video_label1.setAlignment(Qt.AlignCenter)
-
-        #self.ui.video_label1.setPixmap(QPixmap.fromImage(qImg))
-        #self.ui.video_label1.adjustSize()
 
         #activation maps
         height, width, _ = activateMap.shape
@@ -212,33 +188,6 @@ class VideoProcessor(QMainWindow):
         
         self.clearOutputFiles(str(input_images_path))
     
-    '''    
-    def clearOutputFiles(self, input_images_path):
-        for filename in os.listdir(input_images_path):
-            file_path = os.path.join(input_images_path, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-            except Exception as e:
-                self.ui.statusBar().showMessage("Status: Error on remove output files.")
-
-    def saveVideo(self):
-        now = datetime.datetime.now()
-        formatted_now = now.strftime('%Y-%m-%d %H:%M:%S')
-                        
-        filename = now.strftime("%Y-%m-%d_%H-%M-%S.mp4")
-        output_video_path = os.path.join('media', filename)
-        input_images_path = os.path.join('media', 'output')
-
-        clip = ImageSequenceClip(input_images_path, fps=self.fps)
-        clip.write_videofile(output_video_path)
-        
-        self.conn.execute(f"UPDATE history SET end_time = '{formatted_now}', filename = '{output_video_path}', status = 'finished' WHERE id = {self.id_conn}")
-        self.conn.commit()
-        
-        self.clearOutputFiles(input_images_path)
-    '''
-
     def displayFrame(self, processedFrame, activateMap, frameCount, processTime):
         self.updateUI(processedFrame, activateMap, frameCount, processTime)
         self.updateStatusBar(frameCount)
