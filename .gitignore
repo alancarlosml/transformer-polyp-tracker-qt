@@ -1,0 +1,49 @@
+# Compiled source #
+###################
+*.pyc
+*.pyo
+*.pyd
+
+# C extensions #
+################
+*.so
+*.dylib
+*.dll
+
+# Distribution / packaging #
+#############################
+.Python
+env/
+build/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE #
+#######
+.vscode/
+.idea/
+*.swp
+
+# Logs and databases #
+######################
+*.log
+*.sqlite
+*.db
+
+# Other #
+#########
+.DS_Store
+__pycache__/
+*.bak
+*.tmp
+*.backup
+*.pth
+*.zip
