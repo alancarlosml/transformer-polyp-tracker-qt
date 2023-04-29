@@ -11,7 +11,7 @@ To start using the software, follow these steps:
 3. Create a new virtual environment to keep the project's dependencies separate from other Python projects on your computer: `virtualenv venv` or `conda env create --name venv` (Conda)
 4. Activate the virtual environment to use the packages installed in the environment: `source venv/bin/activate` (Linux) or `venv\Scripts\activate` (Windows). For Conda, `conda activate venv`
 5. Install the required packages: `pip install -r requirements.txt`
-6. Download the pre-trained DETR weights from the following link and save them to the "model" folder in the root directory of this repository: www.link.com
+6. Download one of the pre-trained DETR weights from the following link and save them to the "model" folder in the root directory of this repository: https://drive.google.com/drive/folders/1k0LuROFW1W35oe392RMuAivo6uI9duFZ?usp=share_link
 
 ## Usage
 
